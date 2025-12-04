@@ -17,6 +17,12 @@ var joltSum = GetJolts(banks)
 
 Console.WriteLine("Jolt sum: " + joltSum);
 
+long biggerJoltSum = GetBiggerJolts(banks, 12)
+	.Select(long.Parse)
+	.Sum();
+
+Console.WriteLine("Bigger joltage sum: " + biggerJoltSum);
+
 static List<string> GetJolts(List<string> banks)
 {
 	List<string> retval = [];
@@ -82,4 +88,32 @@ static List<string> GetJolts(List<string> banks)
 	}
 
 	return retval;
+}
+
+
+static IEnumerable<string> GetBiggerJolts(IEnumerable<string> banks, int digitsToKeep)
+{
+	foreach (var bank in banks)
+	{
+		int toDrop = bank.Length - digitsToKeep;
+		var stack = new List<char>(bank.Length);
+
+		for (int i = 0; i < bank.Length; i++)
+		{
+			char d = bank[i];
+
+			while (toDrop > 0 && stack.Count > 0 && stack.Last() < d)
+			{
+				stack.RemoveAt(stack.Count - 1);
+				toDrop--;
+			}
+
+			stack.Add(d);
+		}
+
+		if (stack.Count > digitsToKeep)
+			stack.RemoveRange(digitsToKeep, stack.Count - digitsToKeep);
+
+		yield return new string(stack.ToArray(), 0, digitsToKeep);
+	}
 }
